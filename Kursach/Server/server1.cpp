@@ -9,13 +9,19 @@
 #include <unistd.h> //для sleep
 
 using namespace std;
-
+struct ThreadWithClient;
 int createServer();
 struct sockaddr_in createAddress();
 void Bind(int server, struct sockaddr_in address_server);
 void Listener(int server);
 void* recvMSG(void* client_void);
 void* Accept(void* server_void);
+
+struct ThreadWithClien{
+	int client;
+	pthread_t thread;
+};
+
 
 int createServer(){
 	int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -51,25 +57,36 @@ void Bind(int server, struct sockaddr_in address_server){
 }
 
 void Listener(int server){
-	if(listen(server, 0) == -1){
+	if(listen(server, 10) == -1){
                 cout << "Error: listen failed" << endl;
                 exit(0);
         }	
 }
 
-void* recvMSG(void* client_void){
-        int client = *(int*)client_void;
+void* recvMSG(void* arg_void){
+	ThreadWithClien arg;
+       	arg = *(struct ThreadWithClien*)arg_void;
+	int client = arg.client;
+	pthread_t thread = arg.thread;
+	int counter = 0;
+	while(true){
+        	int size = 0;
+		
+        	int resp = recv(client, &size, sizeof(int), 0);
+		if (resp <= 0){
+			break;
+		}
 
-        uint32_t size;
-        recv(client, &size, sizeof(uint32_t), 0);
-        size = ntohl(size);
+		char msg[size];
+        	recv(client, &msg, size, 0);
 
-        char msg[size];
-        recv(client, &msg, size, 0);
-
-        cout << "START\n";
-        sleep(5);
-        cout << msg;
+		cout << "Message from " << client << " client: " << msg << "\n";	
+		if (msg == "stop"){
+			break;
+		}
+	}
+	cout << "Disconnect client! Client id " << client << "\n";
+	//pthread_join(thread, NULL);
 	return nullptr;
 }
 
@@ -83,8 +100,12 @@ void* Accept(void* server_void){
         	if (client == -1){
 			cout << "Error: client failed" << endl;
 		}
+		cout << "Connection client! Client id " << client << "\n";
 		pthread_t thread;
-		pthread_create(&thread, NULL, recvMSG, &client);
+		ThreadWithClien arg;
+		arg.client = client;
+		arg.thread = thread;
+		pthread_create(&thread, NULL, recvMSG, &arg);
 	}
 }
 

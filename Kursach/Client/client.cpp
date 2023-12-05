@@ -11,7 +11,9 @@ using namespace std;
 int createServer();
 struct sockaddr_in createAddress();
 void Connect(int server, struct sockaddr_in address_server);
-void Send(int server, string msg);
+void Send(int server, char* msg);
+void Sending(int server);
+string Convertor(string msg);
 
 int createServer(){
         int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -46,9 +48,30 @@ void Connect(int server, struct sockaddr_in address_server){
 }
 
 void Send(int server, string msg){
-	uint32_t size = htonl(msg.size());
-        send(server, &size, sizeof(uint32_t), 0);
-        send(server, msg.c_str(), msg.size(), 0);
+	int size = msg.size();
+	char msg_c[size+1];
+	for (int i = 0; i < size; i++){
+		msg_c[i] = msg[i];
+	}
+	msg_c[size] = '\0';
+	size++;
+        send(server, &size, sizeof(int), 0);
+        send(server, &msg_c, size, 0);
+}
+
+void Sending(int server){
+	while(true){
+		string msg;
+		getline(cin, msg);
+		Send(server, msg);
+		if (msg == "stop"){
+			return;
+		}
+	}
+}
+
+string Convertor(string msg){
+	return msg +"\n";
 }
 
 int main(){
@@ -57,10 +80,8 @@ int main(){
 	struct sockaddr_in address_server = createAddress();
 	
 	Connect(server, address_server);
-
-	string msg = "HELLO\n";
 	
-	Send(server, msg);
+	Sending(server);
 	
 	return 0;
 }

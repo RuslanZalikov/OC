@@ -4,3 +4,5 @@ client: delete
 delete:
 	if test -f "client"; then rm client; fi
 
+install:
+	sudo apt update
