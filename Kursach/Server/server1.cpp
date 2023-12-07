@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <pthread.h>
 #include <sys/types.h> //для переменных 
@@ -7,15 +8,19 @@
 #include <netinet/in.h> //для sockaddr_in
 #include <arpa/inet.h> //для htons
 #include <unistd.h> //для sleep
+#include <cstdlib> //для system
 
 using namespace std;
+
 struct ThreadWithClient;
 int createServer();
 struct sockaddr_in createAddress();
 void Bind(int server, struct sockaddr_in address_server);
 void Listener(int server);
+void Send(int client, string msg);
 void* recvMSG(void* client_void);
 void* Accept(void* server_void);
+string task1();
 
 struct ThreadWithClien{
 	int client;
@@ -63,6 +68,18 @@ void Listener(int server){
         }	
 }
 
+void Send(int client, string msg){
+        int size = msg.size();
+        char msg_c[size+1];
+        for (int i = 0; i < size; i++){
+                msg_c[i] = msg[i];
+        }
+        msg_c[size] = '\0';
+        size++;
+        send(client, &size, sizeof(int), 0);
+        send(client, &msg_c, size, 0);
+}
+
 void* recvMSG(void* arg_void){
 	ThreadWithClien arg;
        	arg = *(struct ThreadWithClien*)arg_void;
@@ -80,10 +97,15 @@ void* recvMSG(void* arg_void){
 		char msg[size];
         	recv(client, &msg, size, 0);
 
-		cout << "Message from " << client << " client: " << msg << "\n";	
-		if (msg == "stop"){
-			break;
+		if ((string)msg == "stop"){
+                        break;
+                }
+		if ((string)msg == "videocard"){
+			string response = task1();
+			Send(client, response);
 		}
+
+		cout << "Message from " << client << " client: " << msg << "\n";
 	}
 	cout << "Disconnect client! Client id " << client << "\n";
 	//pthread_join(thread, NULL);
@@ -107,6 +129,22 @@ void* Accept(void* server_void){
 		arg.thread = thread;
 		pthread_create(&thread, NULL, recvMSG, &arg);
 	}
+}
+
+string task1(){
+	system("./videocard.sh");
+	ifstream file("videocard.txt");
+	if (!file){
+		cout << "Error: videocard failed" << endl;
+	}
+	string vcresp = "";
+	string tmp;
+	while(!file.eof()){
+		getline(file, tmp);
+		vcresp += tmp;
+		vcresp += "\n";
+	}
+	return vcresp;
 }
 
 int main(){

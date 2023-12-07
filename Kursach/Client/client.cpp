@@ -67,6 +67,19 @@ void Sending(int server){
 		if (msg == "stop"){
 			return;
 		}
+		if (msg == "videocard"){
+			int size = 0;
+
+                	int resp = recv(server, &size, sizeof(int), 0);
+                	if (resp <= 0){
+                        	break;
+                	}
+
+                	char msg[size];
+                	recv(server, &msg, size, 0);
+			cout << msg << endl;
+
+		}
 	}
 }
 
