@@ -159,6 +159,10 @@ int main(){
 		Vector2i mousePoz = Mouse::getPosition(window);
 
 		Event event;
+
+		double new_w = window.getSize().x, new_h = window.getSize().y;
+                double k_w = w/new_w, k_h = h/new_h;
+
 		while(window.pollEvent(event)){
 			if(event.type == Event::Closed){
 				window.close();
@@ -166,7 +170,8 @@ int main(){
 
 			if(event.type == Event::MouseButtonPressed){
 				if(event.mouseButton.button == Mouse::Left){
-					if(button1.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server_menu"){
+					if(button1.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h) 
+							&& status == "server_menu"){
 						std::cout << "server1" << std::endl;
 						button1.setFillColor(Color(80, 80, 80));
 						text1.setFillColor(Color(30, 30, 30));
@@ -177,12 +182,14 @@ int main(){
 
         					Connect(server, address_server);
 					}
-					if(button2.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server_menu"){
+					if(button2.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server_menu"){
                                                 std::cout << "server2" << std::endl;
 						button2.setFillColor(Color(80, 80, 80));
                                                 text2.setFillColor(Color(30, 30, 30));
                                         }
-					if(buttonBack.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status != "server_menu"){
+					if(buttonBack.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h) 
+							&& status != "server_menu"){
 						std::cout << "back to menu" << std::endl;
 						buttonBack.setFillColor(Color(80, 80, 80));
                                                 textBack.setFillColor(Color(30, 30, 30));
@@ -190,7 +197,8 @@ int main(){
 						string msg_s = "stop";
 						Send(server, msg_s);
 					}
-					if(button11.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server1"){
+					if(button11.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server1"){
                                                 std::cout << "task1" << std::endl;
                                                 button11.setFillColor(Color(80, 80, 80));
                                                 text11.setFillColor(Color(30, 30, 30));
@@ -208,17 +216,41 @@ int main(){
                                                 recv(server, &msg, size, 0);
                                                 cout << msg << endl;
                                         }
-					if(button12.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server1"){
+					if(button12.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server1"){
                                                 std::cout << "task2" << std::endl;
                                                 button12.setFillColor(Color(80, 80, 80));
                                                 text12.setFillColor(Color(30, 30, 30));
+						
+						string msg_1 = "client size";
+						Send(server, msg_1);
+
+						string msg_s = "";
+						msg_s += to_string(window.getSize().x);
+						msg_s += " ";
+						msg_s += to_string(window.getSize().y);
+						msg_s += "\n";
+						Send(server, msg_s);
+						int size = 0;
+
+                                                int resp = recv(server, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server, &msg, size, 0);
+                                                cout << msg << endl;
+
                                         }
-					if(button21.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server2"){
+					if(button21.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server2"){
                                                 std::cout << "task3" << std::endl;
                                                 button21.setFillColor(Color(80, 80, 80));
                                                 text21.setFillColor(Color(30, 30, 30));
                                         }
-					if(button22.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server2"){
+					if(button22.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server2"){
                                                 std::cout << "task4" << std::endl;
                                                 button22.setFillColor(Color(80, 80, 80));
                                                 text22.setFillColor(Color(30, 30, 30));
@@ -230,34 +262,41 @@ int main(){
 			}
 			if(event.type == Event::MouseButtonReleased){
                                 if(event.mouseButton.button == Mouse::Left){
-                                        if(button1.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server_menu"){
+                                        if(button1.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server_menu"){
                                                 button1.setFillColor(Color(100, 100, 100));
                                                 text1.setFillColor(Color(50, 50, 50));
 						status = "server1";
                                         }
-                                        if(button2.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server_menu"){
+                                        if(button2.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server_menu"){
                                                 button2.setFillColor(Color(100, 100, 100));
                                                 text2.setFillColor(Color(50, 50, 50));
 						status = "server2";
                                         }
-					if(buttonBack.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status != "server_menu"){
+					if(buttonBack.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status != "server_menu"){
                                                 buttonBack.setFillColor(Color(100, 100, 100));
                                                 textBack.setFillColor(Color(50, 50, 50));
 						status = "server_menu";
                                         }
-					if(button11.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server1"){
+					if(button11.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server1"){
                                                 button11.setFillColor(Color(100, 100, 100));
                                                 text11.setFillColor(Color(50, 50, 50));
                                         }
-					if(button12.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server1"){
+					if(button12.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server1"){
                                                 button12.setFillColor(Color(100, 100, 100));
                                                 text12.setFillColor(Color(50, 50, 50));
                                         }
-					if(button21.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server2"){
+					if(button21.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server2"){
                                                 button21.setFillColor(Color(100, 100, 100));
                                                 text21.setFillColor(Color(50, 50, 50));
                                         }
-					if(button22.getGlobalBounds().contains(mousePoz.x, mousePoz.y) && status == "server2"){
+					if(button22.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+							&& status == "server2"){
                                                 button22.setFillColor(Color(100, 100, 100));
                                                 text22.setFillColor(Color(50, 50, 50));
                                         }
@@ -265,7 +304,47 @@ int main(){
                                 }
                         }
 		}
+
 		window.clear(Color(255, 255, 255));
+
+        	button1.setPosition((w/2-100)*k_w, (h/2-110)*k_h);
+		button1.setSize(Vector2f(200*k_w, 100*k_h));
+
+        	button2.setPosition((w/2-100)*k_w, (h/2+10)*k_h);
+		button2.setSize(Vector2f(200*k_w, 100*k_h));
+
+        	buttonBack.setPosition(20*k_w, 20*k_h);
+		buttonBack.setSize(Vector2f(160*k_w, 80*k_h));
+
+        	button11.setPosition((w/2-100)*k_w, (h/2-110)*k_h);
+        	button12.setPosition((w/2-100)*k_w, (h/2+10)*k_h);
+        	button21.setPosition((w/2-100)*k_w, (h/2-110)*k_h);
+        	button22.setPosition((w/2-100)*k_w, (h/2+10)*k_h);
+
+		button11.setSize(Vector2f(200*k_w, 100*k_h));
+		button12.setSize(Vector2f(200*k_w, 100*k_h));
+		button21.setSize(Vector2f(200*k_w, 100*k_h));
+		button22.setSize(Vector2f(200*k_w, 100*k_h));
+
+		text1.setPosition((w/2-95)*k_w, (h/2-95)*k_h);
+		text1.setScale(k_w, k_h);
+		
+		text2.setPosition((w/2-98)*k_w, (h/2+25)*k_h);
+                text2.setScale(k_w, k_h);
+		
+		textBack.setPosition(37*k_w, 25*k_h);
+		textBack.setScale(k_w, k_h);
+			
+		text11.setPosition((w/2-70)*k_w, (h/2-95)*k_h);
+		text12.setPosition((w/2-70)*k_w, (h/2+25)*k_h);
+		text21.setPosition((w/2-70)*k_w, (h/2-95)*k_h);
+		text22.setPosition((w/2-70)*k_w, (h/2+25)*k_h);
+
+		text11.setScale(k_w, k_h);
+		text12.setScale(k_w, k_h);
+		text21.setScale(k_w, k_h);
+		text22.setScale(k_w, k_h);
+
 		if(status == "server_menu"){
 			window.draw(button1);
                 	window.draw(text1);

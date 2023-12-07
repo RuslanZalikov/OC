@@ -21,6 +21,7 @@ void Send(int client, string msg);
 void* recvMSG(void* client_void);
 void* Accept(void* server_void);
 string task1();
+string task2(int client);
 
 struct ThreadWithClien{
 	int client;
@@ -104,6 +105,10 @@ void* recvMSG(void* arg_void){
 			string response = task1();
 			Send(client, response);
 		}
+		if ((string)msg == "client size"){
+			string response = task2(client);
+			Send(client, response);
+		}
 
 		cout << "Message from " << client << " client: " << msg << "\n";
 	}
@@ -145,6 +150,17 @@ string task1(){
 		vcresp += "\n";
 	}
 	return vcresp;
+}
+
+string task2(int client){
+	int size = 0;
+
+        int resp = recv(client, &size, sizeof(int), 0);
+
+        char msg[size];
+        recv(client, &msg, size, 0);
+	string msg_s = msg;
+	return msg_s;
 }
 
 int main(){
