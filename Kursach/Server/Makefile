@@ -8,4 +8,4 @@ delete1:
 	if test -f "server1"; then rm server1; fi
 
 install:
-	sudo apt update && sudo update-pciids
+	apt update && update-pciids

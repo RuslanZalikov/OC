@@ -5,9 +5,9 @@ delete:
 	if test -f "client"; then rm client; fi
 
 install:
-	sudo apt update
+	apt update
 
-client_gui: delete_gui compile_gui compose_gui
+client_gui: install_gui delete_gui compile_gui compose_gui
 	if test -f "client_gui.o"; then rm client_gui.o; fi
 
 compose_gui:

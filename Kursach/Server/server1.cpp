@@ -44,7 +44,7 @@ struct sockaddr_in createAddress(){
 
 	address_server.sin_family = AF_INET;
         address_server.sin_port = htons(3333); //от хоста в интернет
-        int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
+        int inpt = inet_pton(AF_INET, "0.0.0.0", &address_server.sin_addr);
         
 	if (inpt == -1){
                 cout << "Error: inet_pton failed" << endl;

@@ -9,10 +9,10 @@
 using namespace std;
 
 int createServer();
-struct sockaddr_in createAddress();
+struct sockaddr_in createAddress(int port);
 void Connect(int server, struct sockaddr_in address_server);
 void Send(int server, char* msg);
-void Sending(int server, int host);
+void Sending(int server, int port);
 string Convertor(string msg);
 
 int createServer(){
@@ -24,12 +24,12 @@ int createServer(){
         return server;
 }
 
-struct sockaddr_in createAddress(int host){
+struct sockaddr_in createAddress(int port){
         struct sockaddr_in address_server;
 
         address_server.sin_family = AF_INET;
-        address_server.sin_port = htons(host); //от хоста в интернет
-        int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
+        address_server.sin_port = htons(port); //от хоста в интернет
+        int inpt = inet_pton(AF_INET, "0.0.0.0", &address_server.sin_addr);
 
         if (inpt == -1){
                 cout << "Error: inet_pton failed" << endl;
@@ -59,7 +59,7 @@ void Send(int server, string msg){
         send(server, &msg_c, size, 0);
 }
 
-void Sending(int server, int host){
+void Sending(int server, int port){
 	while(true){
 
 		string msg;
@@ -69,7 +69,7 @@ void Sending(int server, int host){
 		if (msg == "stop"){
 			return;
 		}
-		if (msg == "videocard" && host == 3333){
+		if (msg == "videocard" && port == 3333){
 			int size = 0;
 
                 	int resp = recv(server, &size, sizeof(int), 0);
@@ -82,7 +82,7 @@ void Sending(int server, int host){
 			cout << msg << endl;
 
 		}
-		if (msg == "client size" && host == 3333){
+		if (msg == "client size" && port == 3333){
 			string msg_1;
 			msg_1 = "100 100";
 			Send(server, msg_1);
@@ -99,7 +99,7 @@ void Sending(int server, int host){
                         cout << msg << endl;
 		}
 
-		if (msg == "swap" && host == 3334){
+		if (msg == "swap" && port == 3334){
                      	int size = 0;
 
                         int resp = recv(server, &size, sizeof(int), 0);
@@ -112,7 +112,7 @@ void Sending(int server, int host){
                         cout << msg << endl;
                 }
 
-		if (msg == "memory" && host == 3334){
+		if (msg == "memory" && port == 3334){
 			string msg_1;
 			getline(cin, msg_1);
 			Send(server, msg_1);
@@ -144,22 +144,22 @@ int main(){
 
 	cout << endl;
 	
-	int host = 3333;
+	int port = 3333;
 
 	if (msg == "server1"){
-		host = 3333;
+		port = 3333;
 	}
 	if (msg == "server2"){
-		host = 3334;
+		port = 3334;
 	}
 
 	int server = createServer();
 
-	struct sockaddr_in address_server = createAddress(host);
+	struct sockaddr_in address_server = createAddress(port);
 	
 	Connect(server, address_server);
 	
-	Sending(server, host);
+	Sending(server, port);
 	
 	return 0;
 }

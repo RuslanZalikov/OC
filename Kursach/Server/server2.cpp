@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <pthread.h>
+#include <ctime>
 #include <sys/types.h> //для переменных 
 #include <sys/socket.h> //для сокета
 #include <stdlib.h> //для exit
@@ -43,7 +44,7 @@ struct sockaddr_in createAddress(){
 
 	address_server.sin_family = AF_INET;
         address_server.sin_port = htons(3334); //от хоста в интернет
-        int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
+        int inpt = inet_pton(AF_INET, "0.0.0.0", &address_server.sin_addr);
         
 	if (inpt == -1){
                 cout << "Error: inet_pton failed" << endl;
@@ -105,6 +106,8 @@ void* recvMSG(void* arg_void){
                 }
 		if ((string)msg == "swap"){
 			string response = task3();
+			time_t result = std::time(nullptr);
+			response = (string)"\n" + asctime(std::localtime(&result)) + (string)"\n" + response;
 			Send(client, response);
 		}
 		if ((string)msg == "memory"){
@@ -112,6 +115,8 @@ void* recvMSG(void* arg_void){
 			if(response == "disconnect"){
 				break;
 			}
+			time_t result = std::time(nullptr);
+                        response = (string)"\n" + asctime(std::localtime(&result)) + (string)"\n" + response;
 			Send(client, response);
 		}
 
