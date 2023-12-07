@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <pthread.h>
-#include <ctime>
 #include <sys/types.h> //для переменных 
 #include <sys/socket.h> //для сокета
 #include <stdlib.h> //для exit
@@ -21,8 +20,8 @@ void Listener(int server);
 void Send(int client, string msg);
 void* recvMSG(void* client_void);
 void* Accept(void* server_void);
-string task1();
-string task2(int client);
+string task3();
+string task4(int client);
 
 struct ThreadWithClien{
 	int client;
@@ -43,7 +42,7 @@ struct sockaddr_in createAddress(){
 	struct sockaddr_in address_server;
 
 	address_server.sin_family = AF_INET;
-        address_server.sin_port = htons(3333); //от хоста в интернет
+        address_server.sin_port = htons(3334); //от хоста в интернет
         int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
         
 	if (inpt == -1){
@@ -104,19 +103,18 @@ void* recvMSG(void* arg_void){
 		if ((string)msg == "stop"){
                         break;
                 }
-		if ((string)msg == "videocard"){
-			string response = task1();
-			time_t result = std::time(nullptr);
-    			response = (string)"\n" + asctime(std::localtime(&result)) + (string)"\n" + response;
+		if ((string)msg == "swap"){
+			string response = task3();
 			Send(client, response);
 		}
-		if ((string)msg == "client size"){
-			string response = task2(client);
-			cout << response << endl;
-			time_t result = std::time(nullptr);
-                        response = (string)"\n" + asctime(std::localtime(&result)) + (string)"\n" + response;
+		if ((string)msg == "memory"){
+			string response = task4(client);
+			if(response == "disconnect"){
+				break;
+			}
 			Send(client, response);
 		}
+
 	}
 	cout << "Disconnect client! Client id " << client << "\n";
 	//pthread_join(thread, NULL);
@@ -142,31 +140,94 @@ void* Accept(void* server_void){
 	}
 }
 
-string task1(){
-	system("./scripts/videocard.sh");
-	ifstream file("scripts/videocard.txt");
+string task3(){
+	system("./scripts/swap.sh");
+	ifstream file("scripts/swap.txt");
 	if (!file){
-		cout << "Error: videocard failed" << endl;
+		cout << "Error: swap failed" << endl;
 	}
-	string vcresp = "";
+	string swresp = "";
 	string tmp;
 	while(!file.eof()){
 		getline(file, tmp);
-		vcresp += tmp;
-		vcresp += "\n";
+		swresp += tmp;
+		swresp += "\n";
 	}
-	return vcresp;
+	return swresp;
 }
 
-string task2(int client){
+string task4(int client){
 	int size = 0;
 
         int resp = recv(client, &size, sizeof(int), 0);
 
         char msg[size];
         recv(client, &msg, size, 0);
-	string msg_s = msg;
-	return msg_s;
+        string msg_s = msg;
+        if (msg_s == "G"){
+		system("./scripts/mem_g.sh");
+        	ifstream file("scripts/mem_g.txt");
+        	if (!file){
+                	cout << "Error: swap failed" << endl;
+        	}
+        	string swresp = "";
+        	string tmp;
+        	while(!file.eof()){
+                	getline(file, tmp);
+                	swresp += tmp;
+                	swresp += "\n";
+        	}
+        	return swresp;
+	}
+	if (msg_s == "M"){
+		system("./scripts/mem_m.sh");
+                ifstream file("scripts/mem_m.txt");
+                if (!file){
+                        cout << "Error: swap failed" << endl;
+                }
+                string swresp = "";
+                string tmp;
+                while(!file.eof()){
+                        getline(file, tmp);
+                        swresp += tmp;
+                        swresp += "\n";
+                }
+                return swresp;
+	}
+	if (msg_s == "K"){
+		system("./scripts/mem_k.sh");
+                ifstream file("scripts/mem_k.txt");
+                if (!file){
+                        cout << "Error: swap failed" << endl;
+                }
+                string swresp = "";
+                string tmp;
+                while(!file.eof()){
+                        getline(file, tmp);
+                        swresp += tmp;
+                        swresp += "\n";
+                }
+                return swresp;
+	}
+	if (msg_s == "B"){
+		system("./scripts/mem_b.sh");
+                ifstream file("scripts/mem_b.txt");
+                if (!file){
+                        cout << "Error: swap failed" << endl;
+                }
+                string swresp = "";
+                string tmp;
+                while(!file.eof()){
+                        getline(file, tmp);
+                        swresp += tmp;
+                        swresp += "\n";
+                }
+                return swresp;
+	}
+	if (msg_s == "stop"){
+		return "disconnect";
+	}
+	return "disconnect";
 }
 
 int main(){

@@ -1,1 +1,0 @@
-lspci > "videocard.txt"

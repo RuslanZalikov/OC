@@ -12,7 +12,7 @@ int createServer();
 struct sockaddr_in createAddress();
 void Connect(int server, struct sockaddr_in address_server);
 void Send(int server, char* msg);
-void Sending(int server);
+void Sending(int server, int host);
 string Convertor(string msg);
 
 int createServer(){
@@ -24,11 +24,11 @@ int createServer(){
         return server;
 }
 
-struct sockaddr_in createAddress(){
+struct sockaddr_in createAddress(int host){
         struct sockaddr_in address_server;
 
         address_server.sin_family = AF_INET;
-        address_server.sin_port = htons(3333); //от хоста в интернет
+        address_server.sin_port = htons(host); //от хоста в интернет
         int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
 
         if (inpt == -1){
@@ -59,15 +59,17 @@ void Send(int server, string msg){
         send(server, &msg_c, size, 0);
 }
 
-void Sending(int server){
+void Sending(int server, int host){
 	while(true){
+
 		string msg;
 		getline(cin, msg);
+
 		Send(server, msg);
 		if (msg == "stop"){
 			return;
 		}
-		if (msg == "videocard"){
+		if (msg == "videocard" && host == 3333){
 			int size = 0;
 
                 	int resp = recv(server, &size, sizeof(int), 0);
@@ -80,6 +82,53 @@ void Sending(int server){
 			cout << msg << endl;
 
 		}
+		if (msg == "client size" && host == 3333){
+			string msg_1;
+			msg_1 = "100 100";
+			Send(server, msg_1);
+		
+			int size = 0;
+
+                        int resp = recv(server, &size, sizeof(int), 0);
+                        if (resp <= 0){
+                                break;
+                        }
+
+                        char msg[size];
+                        recv(server, &msg, size, 0);
+                        cout << msg << endl;
+		}
+
+		if (msg == "swap" && host == 3334){
+                     	int size = 0;
+
+                        int resp = recv(server, &size, sizeof(int), 0);
+                        if (resp <= 0){
+                                break;
+                        }
+
+                        char msg[size];
+                        recv(server, &msg, size, 0);
+                        cout << msg << endl;
+                }
+
+		if (msg == "memory" && host == 3334){
+			string msg_1;
+			getline(cin, msg_1);
+			Send(server, msg_1);
+
+			int size = 0;
+
+                        int resp = recv(server, &size, sizeof(int), 0);
+                        if (resp <= 0){
+                                break;
+                        }
+
+                        char msg[size];
+                        recv(server, &msg, size, 0);
+                        cout << msg << endl;
+		}
+
 	}
 }
 
@@ -88,13 +137,29 @@ string Convertor(string msg){
 }
 
 int main(){
+	cout << "Enter server1 or server2: ";
+
+	string msg;
+	getline(cin, msg);
+
+	cout << endl;
+	
+	int host = 3333;
+
+	if (msg == "server1"){
+		host = 3333;
+	}
+	if (msg == "server2"){
+		host = 3334;
+	}
+
 	int server = createServer();
 
-	struct sockaddr_in address_server = createAddress();
+	struct sockaddr_in address_server = createAddress(host);
 	
 	Connect(server, address_server);
 	
-	Sending(server);
+	Sending(server, host);
 	
 	return 0;
 }

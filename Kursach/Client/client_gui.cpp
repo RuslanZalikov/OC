@@ -25,11 +25,11 @@ int createServer(){
         return server;
 }
 
-struct sockaddr_in createAddress(){
+struct sockaddr_in createAddress(int host){
         struct sockaddr_in address_server;
 
         address_server.sin_family = AF_INET;
-        address_server.sin_port = htons(3333); //от хоста в интернет
+        address_server.sin_port = htons(host); //от хоста в интернет
         int inpt = inet_pton(AF_INET, "127.0.0.1", &address_server.sin_addr);
 
         if (inpt == -1){
@@ -63,12 +63,12 @@ void Send(int server, string msg){
 
 
 int main(){
-	int server;
+	int server1, server2;
 	int w = 640, h = 480;
 
 	RenderWindow window;
 	window.create(VideoMode(w, h), L"OKHO", Style::Default);
-	window.setVerticalSyncEnabled(false);
+	window.setVerticalSyncEnabled(true);
 
 	RectangleShape button1(Vector2f(200, 100));
 	button1.setPosition(w/2-100, h/2-110);
@@ -97,6 +97,22 @@ int main(){
         RectangleShape button22(Vector2f(200, 100));
         button22.setPosition(w/2-100, h/2+10);
         button22.setFillColor(Color(100, 100, 100));
+
+	RectangleShape button22G(Vector2f(80, 80));
+        button22G.setPosition(w/2-100, h/2-100);
+        button22G.setFillColor(Color(100, 100, 100));
+
+	RectangleShape button22M(Vector2f(80, 80));
+        button22M.setPosition(w/2, h/2-100);
+        button22M.setFillColor(Color(100, 100, 100));
+
+	RectangleShape button22K(Vector2f(80, 80));
+        button22K.setPosition(w/2-100, h/2);
+        button22K.setFillColor(Color(100, 100, 100));
+
+	RectangleShape button22B(Vector2f(80, 80));
+        button22B.setPosition(w/2, h/2);
+        button22B.setFillColor(Color(100, 100, 100));
 
 	
 	Font font;
@@ -151,6 +167,34 @@ int main(){
         text22.setPosition(w/2-70, h/2+25);
         text22.setFillColor(Color(50, 50, 50));
 
+	Text text22G;
+        text22G.setFont(font);
+        text22G.setString("G");
+        text22G.setCharacterSize(50);
+        text22G.setPosition(w/2-80, h/2-90);
+        text22G.setFillColor(Color(50, 50, 50));
+
+	Text text22M;
+        text22M.setFont(font);
+        text22M.setString("M");
+        text22M.setCharacterSize(50);
+        text22M.setPosition(w/2+20, h/2-90);
+        text22M.setFillColor(Color(50, 50, 50));
+
+	Text text22K;
+        text22K.setFont(font);
+        text22K.setString("K");
+        text22K.setCharacterSize(50);
+        text22K.setPosition(w/2-80, h/2+10);
+        text22K.setFillColor(Color(50, 50, 50));
+
+	Text text22B;
+        text22B.setFont(font);
+        text22B.setString("B");
+        text22B.setCharacterSize(50);
+        text22B.setPosition(w/2+20, h/2+10);
+        text22B.setFillColor(Color(50, 50, 50));
+
 
 
 	std::string status = "server_menu";
@@ -172,21 +216,27 @@ int main(){
 				if(event.mouseButton.button == Mouse::Left){
 					if(button1.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h) 
 							&& status == "server_menu"){
-						std::cout << "server1" << std::endl;
+						cout << "server1" << endl << endl;
 						button1.setFillColor(Color(80, 80, 80));
 						text1.setFillColor(Color(30, 30, 30));
 
-						server = createServer();
+						server1 = createServer();
 
-        					struct sockaddr_in address_server = createAddress();
+        					struct sockaddr_in address_server = createAddress(3333);
 
-        					Connect(server, address_server);
+        					Connect(server1, address_server);
 					}
 					if(button2.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server_menu"){
-                                                std::cout << "server2" << std::endl;
+                                                cout << "server2" << endl << endl;
 						button2.setFillColor(Color(80, 80, 80));
                                                 text2.setFillColor(Color(30, 30, 30));
+
+						server2 = createServer();
+
+						struct sockaddr_in address_server = createAddress(3334);
+
+						Connect(server2, address_server);
                                         }
 					if(buttonBack.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h) 
 							&& status != "server_menu"){
@@ -195,7 +245,12 @@ int main(){
                                                 textBack.setFillColor(Color(30, 30, 30));
 
 						string msg_s = "stop";
-						Send(server, msg_s);
+						if (status == "server1"){
+							Send(server1, msg_s);
+						}
+						if (status == "server2" || status == "task4"){
+							Send(server2, msg_s);
+						}
 					}
 					if(button11.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server1"){
@@ -204,16 +259,16 @@ int main(){
                                                 text11.setFillColor(Color(30, 30, 30));
 
 						string msg_s = "videocard";
-                                                Send(server, msg_s);
+                                                Send(server1, msg_s);
                                                 int size = 0;
 
-                                                int resp = recv(server, &size, sizeof(int), 0);
+                                                int resp = recv(server1, &size, sizeof(int), 0);
                                                 if (resp <= 0){
                                                         break;
                                                 }
 
                                                 char msg[size];
-                                                recv(server, &msg, size, 0);
+                                                recv(server1, &msg, size, 0);
                                                 cout << msg << endl;
                                         }
 					if(button12.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
@@ -223,23 +278,23 @@ int main(){
                                                 text12.setFillColor(Color(30, 30, 30));
 						
 						string msg_1 = "client size";
-						Send(server, msg_1);
+						Send(server1, msg_1);
 
 						string msg_s = "";
 						msg_s += to_string(window.getSize().x);
 						msg_s += " ";
 						msg_s += to_string(window.getSize().y);
 						msg_s += "\n";
-						Send(server, msg_s);
+						Send(server1, msg_s);
 						int size = 0;
 
-                                                int resp = recv(server, &size, sizeof(int), 0);
+                                                int resp = recv(server1, &size, sizeof(int), 0);
                                                 if (resp <= 0){
                                                         break;
                                                 }
 
                                                 char msg[size];
-                                                recv(server, &msg, size, 0);
+                                                recv(server1, &msg, size, 0);
                                                 cout << msg << endl;
 
                                         }
@@ -248,12 +303,125 @@ int main(){
                                                 std::cout << "task3" << std::endl;
                                                 button21.setFillColor(Color(80, 80, 80));
                                                 text21.setFillColor(Color(30, 30, 30));
+
+						string msg_s = "swap";
+						Send(server2, msg_s);
+
+						int size = 0;
+
+                                                int resp = recv(server2, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server2, &msg, size, 0);
+                                                cout << msg << endl;
                                         }
 					if(button22.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server2"){
                                                 std::cout << "task4" << std::endl;
                                                 button22.setFillColor(Color(80, 80, 80));
                                                 text22.setFillColor(Color(30, 30, 30));
+
+						string msg_s = "memory";
+                                                Send(server2, msg_s);
+                                        }
+					if(button22G.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                std::cout << "task4: G" << std::endl;
+                                                button22G.setFillColor(Color(80, 80, 80));
+                                                text22G.setFillColor(Color(30, 30, 30));
+						
+						string msg_s = "G";
+                                                Send(server2, msg_s);
+
+                                                int size = 0;
+
+                                                int resp = recv(server2, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server2, &msg, size, 0);
+                                                cout << msg << endl;
+						
+						string msg_mem = "memory";
+						Send(server2, msg_mem);
+
+                                        }
+					if(button22M.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                std::cout << "task4: M" << std::endl;
+                                                button22M.setFillColor(Color(80, 80, 80));
+                                                text22M.setFillColor(Color(30, 30, 30));
+
+						string msg_s = "M";
+                                                Send(server2, msg_s);
+
+                                                int size = 0;
+
+                                                int resp = recv(server2, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server2, &msg, size, 0);
+                                                cout << msg << endl;
+
+						string msg_mem = "memory";
+                                                Send(server2, msg_mem);
+
+                                        }
+					if(button22K.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                std::cout << "task4: K" << std::endl;
+                                                button22K.setFillColor(Color(80, 80, 80));
+                                                text22K.setFillColor(Color(30, 30, 30));
+
+						string msg_s = "K";
+                                                Send(server2, msg_s);
+
+                                                int size = 0;
+
+                                                int resp = recv(server2, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server2, &msg, size, 0);
+                                                cout << msg << endl;
+
+						string msg_mem = "memory";
+                                                Send(server2, msg_mem);
+
+                                        }
+					if(button22B.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                std::cout << "task4: B" << std::endl;
+                                                button22B.setFillColor(Color(80, 80, 80));
+                                                text22B.setFillColor(Color(30, 30, 30));
+
+						string msg_s = "B";
+                                                Send(server2, msg_s);
+
+                                                int size = 0;
+
+                                                int resp = recv(server2, &size, sizeof(int), 0);
+                                                if (resp <= 0){
+                                                        break;
+                                                }
+
+                                                char msg[size];
+                                                recv(server2, &msg, size, 0);
+                                                cout << msg << endl;
+
+						string msg_mem = "memory";
+                                                Send(server2, msg_mem);
+
                                         }
 
 
@@ -267,38 +435,74 @@ int main(){
                                                 button1.setFillColor(Color(100, 100, 100));
                                                 text1.setFillColor(Color(50, 50, 50));
 						status = "server1";
+						continue;
                                         }
                                         if(button2.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server_menu"){
                                                 button2.setFillColor(Color(100, 100, 100));
                                                 text2.setFillColor(Color(50, 50, 50));
 						status = "server2";
+						continue;
                                         }
 					if(buttonBack.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status != "server_menu"){
                                                 buttonBack.setFillColor(Color(100, 100, 100));
                                                 textBack.setFillColor(Color(50, 50, 50));
 						status = "server_menu";
+						continue;
                                         }
 					if(button11.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server1"){
                                                 button11.setFillColor(Color(100, 100, 100));
                                                 text11.setFillColor(Color(50, 50, 50));
+						continue;
                                         }
 					if(button12.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server1"){
                                                 button12.setFillColor(Color(100, 100, 100));
                                                 text12.setFillColor(Color(50, 50, 50));
+						continue;
                                         }
 					if(button21.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server2"){
                                                 button21.setFillColor(Color(100, 100, 100));
                                                 text21.setFillColor(Color(50, 50, 50));
+						continue;
                                         }
 					if(button22.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server2"){
                                                 button22.setFillColor(Color(100, 100, 100));
                                                 text22.setFillColor(Color(50, 50, 50));
+						status = "task4";
+						continue;
+                                        }
+					if(button22G.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                button22G.setFillColor(Color(100, 100, 100));
+                                                text22G.setFillColor(Color(50, 50, 50));
+                                                status = "task4";
+                                                continue;
+                                        }
+					if(button22M.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                button22M.setFillColor(Color(100, 100, 100));
+                                                text22M.setFillColor(Color(50, 50, 50));
+                                                status = "task4";
+                                                continue;
+                                        }
+					if(button22K.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                button22K.setFillColor(Color(100, 100, 100));
+                                                text22K.setFillColor(Color(50, 50, 50));
+                                                status = "task4";
+                                                continue;
+                                        }
+					if(button22B.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
+                                                        && status == "task4"){
+                                                button22B.setFillColor(Color(100, 100, 100));
+                                                text22B.setFillColor(Color(50, 50, 50));
+                                                status = "task4";
+                                                continue;
                                         }
 
                                 }
@@ -326,6 +530,16 @@ int main(){
 		button21.setSize(Vector2f(200*k_w, 100*k_h));
 		button22.setSize(Vector2f(200*k_w, 100*k_h));
 
+		button22G.setPosition((w/2-100)*k_w, (h/2-100)*k_h);
+                button22M.setPosition((w/2)*k_w, (h/2-100)*k_h);
+                button22K.setPosition((w/2-100)*k_w, (h/2)*k_h);
+                button22B.setPosition((w/2)*k_w, (h/2)*k_h);
+
+		button22G.setSize(Vector2f(80*k_w, 80*k_h));
+                button22M.setSize(Vector2f(80*k_w, 80*k_h));
+                button22K.setSize(Vector2f(80*k_w, 80*k_h));
+                button22B.setSize(Vector2f(80*k_w, 80*k_h));
+
 		text1.setPosition((w/2-95)*k_w, (h/2-95)*k_h);
 		text1.setScale(k_w, k_h);
 		
@@ -344,6 +558,16 @@ int main(){
 		text12.setScale(k_w, k_h);
 		text21.setScale(k_w, k_h);
 		text22.setScale(k_w, k_h);
+		
+		text22G.setPosition((w/2-80)*k_w, (h/2-90)*k_h);
+                text22M.setPosition((w/2+20)*k_w, (h/2-90)*k_h);
+                text22K.setPosition((w/2-80)*k_w, (h/2+10)*k_h);
+                text22B.setPosition((w/2+20)*k_w, (h/2+10)*k_h);
+
+		text22G.setScale(k_w, k_h);
+		text22M.setScale(k_w, k_h);
+		text22K.setScale(k_w, k_h);
+		text22B.setScale(k_w, k_h);
 
 		if(status == "server_menu"){
 			window.draw(button1);
@@ -367,6 +591,20 @@ int main(){
                         window.draw(text21);
                         window.draw(button22);
                         window.draw(text22);
+		}
+		if(status == "task4"){
+			window.draw(buttonBack);
+			window.draw(textBack);
+
+			window.draw(button22G);
+			window.draw(button22M);
+			window.draw(button22K);
+			window.draw(button22B);
+
+			window.draw(text22G);
+			window.draw(text22M);
+			window.draw(text22K);
+			window.draw(text22B);
 		}
 		window.display();
 	}

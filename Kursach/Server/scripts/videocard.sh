@@ -1,0 +1,1 @@
+lspci > "scripts/videocard.txt"
