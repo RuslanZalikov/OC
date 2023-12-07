@@ -1,4 +1,4 @@
-server: delete
+server: install delete
 	g++ server1.cpp -o server
 
 delete:
