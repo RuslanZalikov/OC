@@ -1,2 +1,6 @@
 *.txt
 *.o
+Kursach/Server/server1
+Kursach/Server/server2
+Kursach/Client/client
+Kursach/Client/client_gui
