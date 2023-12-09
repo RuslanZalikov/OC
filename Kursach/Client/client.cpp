@@ -60,6 +60,13 @@ void Send(int server, string msg){
 }
 
 void Sending(int server, int port){
+	int size_1 = 0;
+
+        recv(server, &size_1, sizeof(int), 0);
+
+        char msg_l[size_1];
+        recv(server, &msg_l, size_1, 0);
+        cout << msg_l << endl;
 	while(true){
 
 		string msg;
@@ -158,7 +165,7 @@ int main(){
 	struct sockaddr_in address_server = createAddress(port);
 	
 	Connect(server, address_server);
-	
+		
 	Sending(server, port);
 	
 	return 0;

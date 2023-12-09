@@ -137,6 +137,11 @@ void* Accept(void* server_void){
 			cout << "Error: client failed" << endl;
 		}
 		cout << "Connection client! Client id " << client << "\n";
+		
+		string msg = "Connection in server2\nPull command:\n\tswap: get swap information\n\tmemory: get memory information then you continue request\n\t\tg-gigabyte\n\t\tm-megabyte\n\t\tk-kilobyte\n\t\tb-byte";
+                Send(client, msg);
+
+
 		pthread_t thread;
 		ThreadWithClien arg;
 		arg.client = client;
@@ -169,7 +174,7 @@ string task4(int client){
         char msg[size];
         recv(client, &msg, size, 0);
         string msg_s = msg;
-        if (msg_s == "G"){
+        if (msg_s == "G" || msg_s == "g"){
 		system("./scripts/mem_g.sh");
         	ifstream file("scripts/mem_g.txt");
         	if (!file){
@@ -184,7 +189,7 @@ string task4(int client){
         	}
         	return swresp;
 	}
-	if (msg_s == "M"){
+	if (msg_s == "M" || msg_s == "m"){
 		system("./scripts/mem_m.sh");
                 ifstream file("scripts/mem_m.txt");
                 if (!file){
@@ -199,7 +204,7 @@ string task4(int client){
                 }
                 return swresp;
 	}
-	if (msg_s == "K"){
+	if (msg_s == "K" || msg_s == "k"){
 		system("./scripts/mem_k.sh");
                 ifstream file("scripts/mem_k.txt");
                 if (!file){
@@ -214,7 +219,7 @@ string task4(int client){
                 }
                 return swresp;
 	}
-	if (msg_s == "B"){
+	if (msg_s == "B" || msg_s == "b"){
 		system("./scripts/mem_b.sh");
                 ifstream file("scripts/mem_b.txt");
                 if (!file){

@@ -225,6 +225,14 @@ int main(){
         					struct sockaddr_in address_server = createAddress(3333);
 
         					Connect(server1, address_server);
+
+						int size_1 = 0;
+
+        					recv(server1, &size_1, sizeof(int), 0);
+
+        					char msg_l[size_1];
+        					recv(server1, &msg_l, size_1, 0);
+        					cout << msg_l << endl;
 					}
 					if(button2.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h)
 							&& status == "server_menu"){
@@ -237,6 +245,14 @@ int main(){
 						struct sockaddr_in address_server = createAddress(3334);
 
 						Connect(server2, address_server);
+
+						int size_1 = 0;
+
+        					recv(server2, &size_1, sizeof(int), 0);
+
+        					char msg_l[size_1];
+        					recv(server2, &msg_l, size_1, 0);
+        					cout << msg_l << endl;
                                         }
 					if(buttonBack.getGlobalBounds().contains(mousePoz.x*k_w, mousePoz.y*k_h) 
 							&& status != "server_menu"){

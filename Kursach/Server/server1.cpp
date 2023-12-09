@@ -134,6 +134,11 @@ void* Accept(void* server_void){
 			cout << "Error: client failed" << endl;
 		}
 		cout << "Connection client! Client id " << client << "\n";
+		
+		string msg = "Connection in server1\nPull command:\n\tvideocard: get videocard information\n\tclient size: if you useclient_gui then return size your window, uf you us client then return default size";
+		Send(client, msg);
+
+
 		pthread_t thread;
 		ThreadWithClien arg;
 		arg.client = client;
@@ -155,6 +160,9 @@ string task1(){
 		vcresp += tmp;
 		vcresp += "\n";
 	}
+	if(vcresp.size() <= 5){
+                vcresp = "No videocard";
+        }
 	return vcresp;
 }
 
