@@ -1,4 +1,4 @@
-client: install delete
+client: delete
 	g++ client.cpp -o client
 
 delete:

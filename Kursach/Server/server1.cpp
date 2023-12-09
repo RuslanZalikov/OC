@@ -123,7 +123,7 @@ void* recvMSG(void* arg_void){
 	return nullptr;
 }
 
-void* Accept(void* server_void){
+void* Accept(void* server_void){ 
 	while(true){
         	int server = *(int*)server_void;
 	
@@ -186,6 +186,8 @@ int main(){
 
 	Listener(server);
 
+	cout << "server1 Starting..." << endl;
+	
 	Accept(&server);
 
 	return 0;

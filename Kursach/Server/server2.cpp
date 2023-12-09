@@ -248,6 +248,8 @@ int main(){
 	Bind(server, address_server);
 
 	Listener(server);
+	
+	cout << "server2 Starting.." << endl;
 
 	Accept(&server);
 

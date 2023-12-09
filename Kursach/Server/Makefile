@@ -1,4 +1,4 @@
-server2: install delete2 server1
+server2: delete2 server1
 	g++ server2.cpp -o server2
 server1: delete1
 	g++ server1.cpp -o server1
